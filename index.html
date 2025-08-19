@@ -2,23 +2,69 @@
 <html lang="ar" dir="rtl">
 <head>
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, setDoc, getDoc, doc } 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyAyL7tRwHaZ4tEdq7HZJT3ps42auzHZNg8",
-    authDomain: "bbus-a917b.firebaseapp.com",
-    projectId: "bbus-a917b",
-    storageBucket: "bbus-a917b.appspot.com",
-    messagingSenderId: "276587053012",
-    appId: "1:276587053012:web:85e4e0c33e124443492041",
-    measurementId: "G-FL2P72NYB3"
+    apiKey: "...",
+    authDomain: "...",
+    projectId: "...",
+    storageBucket: "...",
+    messagingSenderId: "...",
+    appId: "...",
+    measurementId: "..."
   };
 
+  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script> 
+  const db = getFirestore(app);
 
+  // زر الحفظ
+  document.getElementById("btnSave").addEventListener("click", async () => {
+    try {
+      const table = document.querySelector("table");
+      let rows = [];
+      table.querySelectorAll("tr").forEach(tr => {
+        let row = [];
+        tr.querySelectorAll("td").forEach(td => {
+          row.push(td.innerText);
+        });
+        if (row.length > 0) rows.push(row);
+      });
+
+      await setDoc(doc(db, "tables", "myTable"), { data: rows });
+      alert("✅ تم حفظ الجدول كامل في Firebase");
+    } catch (e) {
+      console.error("❌ خطأ في الحفظ: ", e);
+    }
+  });
+
+  // استرجاع البيانات عند تحميل الصفحة
+  window.addEventListener("load", async () => {
+    try {
+      const snap = await getDoc(doc(db, "tables", "myTable"));
+      if (snap.exists()) {
+        const data = snap.data().data;
+        const table = document.querySelector("table");
+        table.innerHTML = "";
+
+        data.forEach(row => {
+          let tr = document.createElement("tr");
+          row.forEach(cell => {
+            let td = document.createElement("td");
+            td.innerText = cell;
+            tr.appendChild(td);
+          });
+          table.appendChild(tr);
+        });
+      }
+    } catch (e) {
+      console.error("❌ خطأ في جلب البيانات: ", e);
+    }
+  });
+
+</script>
 </head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
