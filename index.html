@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <!-- Firebase SDK (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.1.0/firebase-auth-compat.js"></script>
+
+  <!-- تهيئة Firebase -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAQFa9Xt-WSD3tKsksEyyAlDNBcwORZLYc",
+      authDomain: "mostafa-82878.firebaseapp.com",
+      projectId: "mostafa-82878",
+      storageBucket: "mostafa-82878.firebasestorage.app",
+      messagingSenderId: "269958161580",
+      appId: "1:269958161580:web:b846d49578fb2068e6eb09",
+      measurementId: "G-VPEVY74FNF"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+  </script>
+</head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BUs Yahyao — نسخة كاملة</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet"/>
+
+<style>
+/* =========================
+   المتغيرات العامة / الثيم
+========================= */
+:root{
+  --primary:#2563eb; --primary-2:#0ea5e9;
+  --bg:#f7f7fb; --card:#ffffff; --text:#1f2937;
+  --muted:#6b7280; --border:#e5e7eb;
+  --radius:14px; --shadow:0 10px 24px rgba(0,0,0,.08);
+  --fs:16px; --accent:#22c55e; --danger:#ef4444; --warn:#f59e0b;
+}
+body.dark{
+  --primary:#3b82f6; --primary-2:#22d3ee;
+  --bg:#0f172a; --card:#0b1222; --text:#e5e8f0;
+  --muted:#9aa4b2; --border:#1e293b;
+  --accent:#10b981; --danger:#f87171; --warn:#fbbf24;
+}
+
+/* =========================
+   ريستاس و أساسيات
+========================= */
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);
+  transition:background .3s,color .3s;font-size:var(--fs);
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+
+/* =========================
+   شريط علوي
+========================= */
+.top{
+  position:fixed;top:0;left:0;right:0;background:var(--card);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:10px 14px;z-index:1000;transition:.25s;
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--primary)}
+.icon-btn{
+  background:none;border:none;font-size:1.15rem;margin-inline-start:6px;cursor:pointer;color:var(--text);
+  transition:transform .2s,opacity .2s;
+}
+.icon-btn:hover{transform:scale(1.12);opacity:.85}
+
+/* =========================
+   قائمة جانبية
+========================= */
+nav#side{
+  position:fixed;top:0;right:0;height:100%;width:300px;background:var(--card);border-left:1px solid var(--border);
+  transform:translateX(100%);transition:transform .35s;z-index:1100;padding:64px 16px 18px;overflow-y:auto;
+}
+#side.active{transform:translateX(0)}
+.side-item, .side-btn{
+  display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;margin:7px 0;color:var(--text);
+  transition:.25s;width:100%;border:none;background:none;cursor:pointer;font-weight:600;text-align:right;
+}
+.side-item:hover,.side-btn:hover,.side-item.active{background:rgba(2,132,199,.08);color:var(--primary);transform:translateX(-4px)}
+.close-side{
+  position:absolute;left:12px;top:12px;background:none;border:none;font-size:1.2rem;color:var(--muted);cursor:pointer;
+}
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:1050}
+#overlay.active{display:block}
+
+/* =========================
+   محتوى
+========================= */
+.main{margin-top:60px;padding:16px;max-width:1400px;margin-inline:auto}
+.view{display:none}
+.view.active{display:block}
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px;margin-bottom:14px;box-shadow:var(--shadow);
+}
+.header-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+
+/* =========================
+   أزرار عامة + تنسيقات
+========================= */
+.btn{
+  border:none;cursor:pointer;border-radius:12px;padding:10px 12px;display:inline-flex;align-items:center;gap:8px;
+  transition:transform .15s,opacity .2s,box-shadow .2s;background:var(--primary);color:#fff;font-weight:700
+}
+.btn.secondary{background:#e5e7eb;color:#111}
+body.dark .btn.secondary{background:#334155;color:#e5e8f0}
+.btn.accent{background:var(--accent)}
+.btn.warn{background:var(--warn)}
+.btn.danger{background:var(--danger)}
+.btn.ghost{background:transparent;border:1px dashed var(--border);color:var(--text)}
+.btn:hover{transform:translateY(-1px);opacity:.95}
+.btn:active{transform:scale(.96)}
+.btn.glow{box-shadow:0 0 0 0 rgba(59,130,246,.7);animation:pulse 1.6s infinite}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(59,130,246,.45)}
+  70%{box-shadow:0 0 0 14px rgba(59,130,246,0)}
+  100%{box-shadow:0 0 0 0 rgba(59,130,246,0)}
+}
+.btn.spin:hover i{animation:spin .8s linear}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn.wiggle:hover{animation:wiggle .4s}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(2deg)}75%{transform:rotate(-2deg)}}
+
+/* شارة صغيرة */
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:10px;background:rgba(34,197,94,.12);color:var(--accent);font-weight:700}
+
+/* حقول */
+.input, select{
+  padding:10px;border:1px solid var(--border);border-radius:12px;background:transparent;color:var(--text)
+}
+.input:focus, select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* =========================
+   جدول
+========================= */
+.table-wrap{overflow:auto;max-height:60vh;border:1px solid var(--border);border-radius:12px}
+.bus-table{width:100%;border-collapse:collapse;font-size:.92rem}
+.bus-table th,.bus-table td{border-bottom:1px solid var(--border);padding:8px 10px;text-align:center}
+.bus-table thead th{position:sticky;top:0;background:linear-gradient(0deg, var(--card), var(--card)), var(--secondary);color:var(--primary);z-index:1}
+.row-actions{display:flex;gap:6px;justify-content:center}
+.row-actions .btn{padding:6px 8px;border-radius:10px}
+td[contenteditable]{outline:0}
+tr.highlight td{background:rgba(34,197,94,.08)}
+
+/* =========================
+   مودال عام
+========================= */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1200}
+.modal-backdrop.active{display:flex}
+.modal{
+  width:min(96%,520px);background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:var(--shadow);
+}
+
+/* تبويبات صغيرة */
+.tabs{display:flex;gap:8px;margin:8px 0}
+.tab{padding:8px 10px;border-radius:10px;border:1px solid var(--border);cursor:pointer}
+.tab.active{background:var(--primary);color:#fff;border-color:transparent}
+
+/* فاصل */
+.hr{height:1px;background:var(--border);margin:12px 0}
+
+/* اشعارات */
+.notice{padding:10px;border-radius:10px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.25);color:var(--primary);margin-top:8px}
+
+/* تلميح */
+.tip{font-size:.86rem;color:var(--muted)}
+
+/* ألوان لوحة */
+.palette{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:28px;height:28px;border-radius:6px;border:2px solid #fff;box-shadow:0 0 0 2px var(--border);cursor:pointer}
+
+/* Toast */
+.toast{position:fixed;bottom:16px;right:16px;z-index:1300;display:flex;flex-direction:column;gap:8px}
+.toast .item{background:var(--card);border:1px solid var(--border);padding:10px 12px;border-radius:12px;box-shadow:var(--shadow)}
+.brand-logo {
+  max-height: 70px;             /* الصورة ما تتعدى هذا الحجم */
+  width: auto;                  /* يحافظ على التناسب */
+  object-fit: contain;
+}.top {
+  height: 50px;                 /* يثبت ارتفاع الشريط */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  background: #fff;             /* لون الخلفية للشريط */
+  box-sizing: border-box;
+}
+
+.brand-logo {
+  max-height: 70px;             /* الصورة ما تكبر عن هذا */
+  width: auto;
+  object-fit: contain;
+}
+</style>
+</head>
+
+<body>
+<!-- شريط علوي -->
+<div class="top">
+<div class="brand">
+  <img src="https://i.ibb.co/1GqnggY6/20250819-131124.png" alt="BUS Yahyoui" class="brand-logo" />
+</div>
+  <div>
+    <button class="icon-btn" id="btnTheme" title="نهار/ليل"><i class="fa fa-moon"></i></button>
+    <button class="icon-btn" id="btnBell" title="إشعارات"><i class="fa fa-bell"></i></button>
+    <button class="icon-btn" id="btnMenu" title="القائمة"><i class="fa fa-bars"></i></button>
+  </div>
+</div>
+
+<!-- تعتيم -->
+<div id="overlay"></div>
+
+<!-- قائمة جانبية -->
+<nav id="side">
+  <button class="close-side" id="closeSide" title="إغلاق"><i class="fa fa-times"></i></button>
+
+  <a class="side-item active" data-view="routes"><i class="fa fa-bus"></i>Réseau de transport</a>
+  <a class="side-item" data-view="settings"><i class="fa fa-gear"></i> Paramètres</a>
+  <a class="side-item" data-view="profile"><i class="fa fa-user"></i>Profil</a>
+  <a class="side-item" data-view="tools"><i class="fa fa-toolbox"></i> Outils complémentaires</a>
+  <a class="side-item" data-view="reports"><i class="fa fa-file-lines"></i> Rapport</a>
+  <a class="side-item" data-view="help"><i class="fa fa-circle-question"></i> Aide</a>
+
+  <div class="hr"></div>
+
+  <button class="side-btn" id="navSignUp"><i class="fa fa-user-plus"></i> Sign Up</button>
+  <button class="side-btn" id="navDeleteAll"><i class="fa fa-trash"></i>Supprimer toutes les données</button>
+  <button class="side-btn" id="navLogout"><i class="fa fa-right-from-bracket"></i>Déconnexion</button>
+
+  <!-- نموذج التسجيل -->
+  <form id="signForm" class="card" style="display:none;margin-top:10px;">
+    <div class="row">
+      <input class="input" id="suName" placeholder="Nom complet" required>
+      <input class="input" id="suEmail" type="email" placeholder="Adresse e-mail" required>
+      <input class="input" id="suPass" type="password" placeholder="Mot de passe" required>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button class="btn accent" type="submit"><i class="fa fa-check"></i> conecter</button>
+      <button class="btn ghost" type="button" id="suCancel"><i class="fa fa-xmark"></i>Annuler</button>
+    </div>
+    <div class="tip">Les utilisateurs sont enregistrés.</div>
+  </form>
+</nav>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- المحتوى -->
+<div class="main">
+
+  <!-- عرض الخطوط -->
+  <section class="view active" id="view-routes">
+    <div class="card">
+      <div class="header-row">
+        <div class="row">
+          <input id="search" class="input" placeholder="Rechercher...">
+          <select id="sortBy">
+            <option value="name">Trier par nom</option>
+            <option value="filled">Tous les champs sont complétés</option>
+          </select>
+          <button class="btn spin" id="btnRefresh"><i class="fa fa-rotate"></i> Mise à jour de l’offre</button>
+        </div>
+        <div class="row">
+          <button class="btn glow" id="btnSave"><i class="fa fa-save"></i> save</button>
+          <button class="btn secondary" id="btnPrint"><i class="fa fa-print"></i> Imprimer</button>
+          <button class="btn" id="btnCSV"><i class="fa fa-file-csv"></i> Exporter CSV</button>
+          <button class="btn" id="btnJSON"><i class="fa fa-code"></i> Exporter JSON</button>
+          <label class="btn ghost" for="fileCSV"><i class="fa fa-upload"></i> Importer CSV</label>
+          <input type="file" id="fileCSV" accept=".csv" style="display:none">
+        </div>
+      </div>
+
+      <div class="hr"></div>
+
+      <div class="row" style="margin:8px 0">
+        <button class="btn accent" id="btnAddRow"><i class="fa fa-plus"></i> Ajouter une ligne</button>
+        <button class="btn warn" id="btnHighlightMissing"><i class="fa fa-highlighter"></i> Premium</button>
+        <button class="btn ghost" id="btnClearHighlights"><i class="fa fa-eraser"></i> clear Premium</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="bus-table" id="tbl">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nom de la station</th>
+              <th>Anomalies</th>
+              <th>BIV</th>
+              <th>Observations</th>
+              <th>Affichage</th>
+              <th>Suggestions</th>
+              <th>Dégradation</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <!-- يُملأ تلقائيًا عند التحميل -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tip">Cliquez sur n'importe quelle cellule (sauf le nom) pour éditer / Sauvegarde via le bouton”.</div>
+    </div>
+  </section>
+
+  <!-- الإعدادات -->
+  <section class="view" id="view-settings">
+    <div class="card">
+      <div class="section-title"><b>⚙️ Paramètres avancés</b></div>
+
+      <div class="row" style="margin:8px 0">
+        <button class="btn" id="setTheme"><i class="fa fa-adjust"></i> Changer le thème</button>
+        <button class="btn secondary" id="fontCycle"><i class="fa fa-text-height"></i> Diminuer la taille de police</button>
+        <button class="btn" id="btnFamily"><i class="fa fa-font"></i> Modifier la police</button>
+        <button class="btn warn" id="btnPalette"><i class="fa fa-palette"></i> Couleurs de l'interface</button>
+        <button class="btn" id="btnDensity"><i class="fa fa-maximize"></i>Densité du tableau</button>
+        <button class="btn secondary" id="btnSticky"><i class="fa fa-thumbtack"></i> En-tête fixe</button>
+      </div>
+
+      <div class="row" style="margin:8px 0">
+        <button class="btn accent" id="btnNotif"><i class="fa fa-bell"></i>Notification de test</button>
+        <button class="btn" id="btnFeedback"><i class="fa fa-comment-dots"></i>Envoyer des retours</button>
+        <button class="btn" id="btnBackup"><i class="fa fa-download"></i>Sauvegarde des données</button>
+        <label class="btn ghost" for="fileBackup"><i class="fa fa-upload"></i>Restaurer une sauvegarde</label>
+        <input id="fileBackup" type="file" accept="application/json" style="display:none"/>
+      </div>
+
+      <div class="row" style="margin:8px 0">
+        <button class="btn danger" id="btnReset"><i class="fa fa-trash"></i> Réinitialiser tous les paramètres</button>
+        <button class="btn" id="btnAbout"><i class="fa fa-circle-info"></i>À propos</button>
+      </div>
+
+      <div class="notice"><i class="fa fa-lightbulb"></i> Tous les paramètres sont sauvegardés automatiquement.</div>
+    </div>
+  </section>
+
+  <!-- الملف الشخصي -->
+  <section class="view" id="view-profile">
+    <div class="card">
+      <div class="section-title"><b>👤 Profil utilisateur</b></div>
+      <div class="row">
+        <input class="input" id="pfName" placeholder="Nom">
+        <input class="input" id="pfEmail" placeholder="Email">
+        <button class="btn accent" id="pfSave"><i class="fa fa-floppy-disk"></i>Save</button>
+        <button class="btn ghost" id="pfClear"><i class="fa fa-broom"></i> clear</button>
+      </div>
+      <div class="tip">.</div>
+    </div>
+  </section>
+
+  <!-- أدوات إضافية -->
+  <section class="view" id="view-tools">
+    <div class="card">
+      <div class="section-title"><b>🧰 outils </b></div>
+      <div class="row">
+        <button class="btn" id="btnNewRoute"><i class="fa fa-road"></i> Créer une nouvelle police</button>
+        <button class="btn" id="btnRouteStats"><i class="fa fa-chart-line"></i> Statistiques</button>
+        <button class="btn" id="btnCompact"><i class="fa fa-compress"></i> Mode compact </button>
+        <button class="btn" id="btnWide"><i class="fa fa-expand"></i> Mode large </button>
+      </div>
+      <div id="toolInfo" class="notice" style="display:none;margin-top:10px"></div>
+    </div>
+  </section>
+
+  <!-- تقارير -->
+  <section class="view" id="view-reports">
+    <div class="card">
+      <div class="section-title"><b>📄 Générer un rapport</b></div>
+      <div class="row">
+        <button class="btn" id="btnReportToday"><i class="fa fa-calendar-day"></i>Rapport journalier</button>
+        <button class="btn" id="btnReportFull"><i class="fa fa-list"></i> Rapport détaillé</button>
+        <button class="btn secondary" id="btnReportPrint"><i class="fa fa-print"></i>Imprimer un rapport</button>
+      </div>
+      <div id="reportOut" class="card" style="margin-top:10px;display:none"></div>
+    </div>
+  </section>
+
+  <!-- مساعدة -->
+  <section class="view" id="view-help">
+    <div class="card">
+      <div class="section-title"><b>❓ Aide</b></div>
+      <p>En cas de problème, contactez le support : WhatsApp +33 6 11 73 27 79.</p>
+      <div class="hr"></div>
+      <p class="tip">Cette version a été conçue pour fonctionner sans serveurs — tout se fait uniquement dans le navigateur</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- مودال عام (ملاحظات/ألوان/خط) -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <div class="row" style="justify-content:space-between">
+      <b id="modalTitle">عنوان</b>
+      <button class="icon-btn" id="modalClose" title="إغلاق"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div class="hr"></div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+/* ======================================================
+   أدوات مساعدة صغيرة
+====================================================== */
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+const toast = msg=>{
+  const box = $('#toast');
+  const it = document.createElement('div');
+  it.className='item';
+  it.textContent = msg;
+  box.appendChild(it);
+  setTimeout(()=>{it.remove()}, 3500);
+};
+const confirmBox = (q)=> new Promise(res=>{
+  const ok = confirm(q); res(ok);
+});
+
+/* ======================================================
+   بيانات المحطات الأساسية — خط 45
+====================================================== */
+const STOPS = [
+"Concorde-Royale","Madeleine - Malesherbes","Capucines - Caumartin","Opéra - Scribe","Chaussée d’Antin","Le Peletier","Saint-Georges","Provence","Maubeuge","Maubeuge - Rochechouart","Condorcet","Square Montholon","Place Franz Liszt","Gare du Nord - Dunkerque","Gare du Nord","La Fayette - Magenta","Caill - Demarquay","Philippe de Girard","Marx Dormoy","Porte de la Chapelle","Boulevard Ney","Pont de la Chapelle","Riquet","Canal Saint-Denis","Quai de la Gironde","Rosa Parks","Aubervilliers - Pont de Stains","Fort d'Aubervilliers","Aubervilliers - Pantin Quatre Chemins","Jean Jaurès - Pantin","Église de Pantin","Hoche","Porte de Pantin","Butte du Chapeau Rouge","Aubervilliers - France-Asie"
+];
+
+/* ======================================================
+   بناء الجدول + تحميل/حفظ
+====================================================== */
+const tbody = $('#tbody');
+function buildTable(){
+  tbody.innerHTML='';
+  db.collection("busStops").doc("ligne45").get().then(doc=>{
+    const saved = doc.exists ? doc.data().rows : [];
+    STOPS.forEach((name,idx)=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`
+        <td>${idx+1}</td>
+        <td><b>${name}</b></td>
+        <td contenteditable>${saved[idx]?.[2]||''}</td>
+        <td contenteditable>${saved[idx]?.[3]||''}</td>
+        <td contenteditable>${saved[idx]?.[4]||''}</td>
+        <td contenteditable>${saved[idx]?.[5]||''}</td>
+        <td contenteditable>${saved[idx]?.[6]||''}</td>
+        <td contenteditable>${saved[idx]?.[7]||''}</td>
+        <td class="row-actions">
+          <button class="btn ghost btnEdit"><i class="fa fa-pen"></i></button>
+          <button class="btn accent btnNote"><i class="fa fa-note-sticky"></i></button>
+          <button class="btn danger btnDelete"><i class="fa fa-trash"></i></button>
+        </td>`;
+      tbody.appendChild(tr);
+    });
+  });
+}
+function saveTable(){
+  const rows = [...tbody.rows];
+  const data = rows.map(r=>[...r.cells].map(c=>c.innerText));
+
+  // ⬅️ بدال localStorage.setItem 
+  db.collection("busStops").doc("ligne45").set({rows: data})
+    .then(()=> toast('تم حفظ البيانات على Firebase ✅'))
+    .catch(err=> toast('خطأ: '+err.message));
+}
+function exportCSV(){
+  const rows = [['#','اسم المحطة','Anomalies','BIV','Observations','Affichage','Suggestions','Dégradation']];
+  [...tbody.rows].forEach((r,i)=>{
+    rows.push([i+1, r.cells[1].innerText, ...[...r.cells].slice(2,8).map(c=>c.innerText)]);
+  });
+  const csv = rows.map(a=>a.map(t=>`"${String(t).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');a.href=URL.createObjectURL(blob);a.download='line45.csv';a.click();URL.revokeObjectURL(a.href);
+}
+function exportJSON(){
+  const rows=[...tbody.rows].map((r,i)=>({
+    index:i+1, name:r.cells[1].innerText,
+    Anomalies:r.cells[2].innerText,
+    BIV:r.cells[3].innerText,
+    Observations:r.cells[4].innerText,
+    Affichage:r.cells[5].innerText,
+    Suggestions:r.cells[6].innerText,
+    Degradation:r.cells[7].innerText
+  }));
+  const blob=new Blob([JSON.stringify(rows,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='line45.json';a.click();URL.revokeObjectURL(a.href);
+}
+function importCSV(file){
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const lines = reader.result.split(/\r?\n/).filter(Boolean).slice(1); // skip header
+    lines.forEach((ln,i)=>{
+      const cols = ln.split(',').map(s=>s.replace(/^"|"$/g,'').replace(/""/g,'"'));
+      const row = tbody.rows[i]; if(!row) return;
+      for(let j=0;j<6;j++){ row.cells[j+2].innerText = cols[j+2]||''; }
+    });
+    toast('تم استيراد CSV ✨');
+  };
+  reader.readAsText(file,'utf-8');
+}
+
+/* صفوف — أحداث */
+tbody.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  const tr = e.target.closest('tr');
+  if(btn.classList.contains('btnDelete')){
+    confirmBox('حذف هذا الصف؟').then(ok=>{
+      if(ok){ tr.remove(); toast('تم الحذف 🗑️'); renumber(); }
+    });
+  }else if(btn.classList.contains('btnNote')){
+    openNotes(tr);
+  }else if(btn.classList.contains('btnEdit')){
+    tr.classList.add('highlight'); setTimeout(()=>tr.classList.remove('highlight'),700);
+  }
+});
+function renumber(){[...tbody.rows].forEach((r,i)=>r.cells[0].innerText=i+1)}
+
+/* بحث/فرز */
+$('#search').addEventListener('input', ()=>{
+  const q = $('#search').value.toLowerCase();
+  [...tbody.rows].forEach(r=>{
+    const name = r.cells[1].innerText.toLowerCase();
+    r.style.display = name.includes(q) ? '' : 'none';
+  });
+});
+$('#sortBy').addEventListener('change', ()=>{
+  const val = $('#sortBy').value;
+  const rows = [...tbody.rows];
+  if(val==='name'){
+    rows.sort((a,b)=>a.cells[1].innerText.localeCompare(b.cells[1].innerText,'ar'));
+  }else{
+    // عدد الخانات المكتملة
+    const filled = r=>[...r.cells].slice(2,8).reduce((n,c)=>n+(c.innerText.trim()?1:0),0);
+    rows.sort((a,b)=>filled(b)-filled(a));
+  }
+  rows.forEach(r=>tbody.appendChild(r));
+  renumber();
+});
+
+/* أزرار رئيسية */
+$('#btnSave').addEventListener('click', saveTable);
+$('#btnCSV').addEventListener('click', exportCSV);
+$('#btnJSON').addEventListener('click', exportJSON);
+$('#btnPrint').addEventListener('click', ()=>window.print());
+$('#btnRefresh').addEventListener('click', ()=>{buildTable();toast('تم التحديث 🔄')});
+$('#btnAddRow').addEventListener('click', ()=>{
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>?</td><td><b>Nouvelle station</b></td>
+  <td contenteditable></td><td contenteditable></td><td contenteditable></td>
+  <td contenteditable></td><td contenteditable></td><td contenteditable></td>
+  <td class="row-actions">
+    <button class="btn ghost btnEdit"><i class="fa fa-pen"></i></button>
+    <button class="btn accent btnNote"><i class="fa fa-note-sticky"></i></button>
+    <button class="btn danger btnDelete"><i class="fa fa-trash"></i></button>
+  </td>`;
+  tbody.appendChild(tr); renumber(); toast('➕ Une ligne a été ajoutée ');
+});
+$('#btnHighlightMissing').addEventListener('click', ()=>{
+  [...tbody.rows].forEach(r=>{
+    const empty = [...r.cells].slice(2,8).some(c=>!c.innerText.trim());
+    r.classList.toggle('highlight', empty);
+  });
+});
+$('#btnClearHighlights').addEventListener('click', ()=>{
+  [...tbody.rows].forEach(r=>r.classList.remove('highlight'));
+});
+$('#fileCSV').addEventListener('change', e=>{
+  const f=e.target.files[0]; if(f) importCSV(f);
+});
+
+/* ======================================================
+   القائمة الجانبية + العرض
+====================================================== */
+const side = $('#side'); const overlay = $('#overlay');
+$('#btnMenu').addEventListener('click', ()=>{side.classList.add('active');overlay.classList.add('active')});
+$('#closeSide').addEventListener('click', closeSide); overlay.addEventListener('click', closeSide);
+function closeSide(){side.classList.remove('active');overlay.classList.remove('active')}
+$$('#side .side-item').forEach(a=>{
+  a.addEventListener('click', ()=>{
+    $$('#side .side-item').forEach(x=>x.classList.remove('active'));
+    a.classList.add('active');
+    $$('.view').forEach(v=>v.classList.remove('active'));
+    $('#view-'+a.dataset.view).classList.add('active');
+    closeSide();
+  });
+});
+
+/* حذف من الهمبرغر + تسجيل */
+$('#navDeleteAll').addEventListener('click', async ()=>{
+  if(await confirmBox('Supprimer all')){ localStorage.clear(); location.reload(); }
+});
+$('#navLogout').addEventListener('click', ()=>{ toast('Déconnexion effectuée (simulation) 🚪'); });
+$('#navSignUp').addEventListener('click', ()=>{
+  const f = $('#signForm'); f.style.display = f.style.display==='none'?'block':'none';
+});
+$('#signForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  const u = {name:$('#suName').value.trim(),email:$('#suEmail').value.trim(),pass:$('#suPass').value};
+  if(!u.name||!u.email||!u.pass){toast('Compléter les droits');return}
+  const arr = JSON.parse(localStorage.getItem('users')||'[]'); arr.push(u);
+  localStorage.setItem('users', JSON.stringify(arr));
+  e.target.reset(); $('#signForm').style.display='none'; toast('Déconnexion effectuée ✅');
+});
+$('#suCancel').addEventListener('click', ()=>$('#signForm').style.display='none');
+
+/* ======================================================
+   الإعدادات المتقدمة
+====================================================== */
+const themeApply=()=>{
+  const t=localStorage.getItem('theme')||'light';
+  document.body.classList.toggle('dark', t==='dark');
+};
+$('#btnTheme').addEventListener('click', ()=>{ // من الشريط العلوي
+  const dark = !document.body.classList.contains('dark');
+  localStorage.setItem('theme', dark?'dark':'light'); themeApply();
+});
+$('#setTheme').addEventListener('click', ()=>{ // من الإعدادات
+  const dark = !document.body.classList.contains('dark');
+  localStorage.setItem('theme', dark?'dark':'light'); themeApply();
+});
+
+const sizes=[14,16,18,20];
+function fontApply(){ document.documentElement.style.setProperty('--fs', (localStorage.getItem('fontSize')||16)+'px');}
+$('#fontCycle').addEventListener('click', ()=>{
+  const cur=+localStorage.getItem('fontSize')||16;
+  const next=sizes[(sizes.indexOf(cur)+1)%sizes.length];
+  localStorage.setItem('fontSize', next); fontApply();
+});
+
+$('#btnFamily').addEventListener('click', ()=>{
+  openModal('Choix de la police', `
+    <div class="tabs">
+      <div class="tab active" data-fam="Tajawal">Tajawal</div>
+      <div class="tab" data-fam="Cairo">Cairo</div>
+      <div class="tab" data-fam="Amiri">Amiri</div>
+    </div>
+    <div class="tip">Profil enregistré.</div>
+  `);
+  $$('#modal .tab').forEach(t=>{
+    t.addEventListener('click', ()=>{
+      $$('#modal .tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      const fam=t.dataset.fam;
+      const link=document.createElement('link');
+      link.rel='stylesheet';
+      link.href=`https://fonts.googleapis.com/css2?family=${encodeURIComponent(fam)}:wght@400;500;700&display=swap`;
+      document.head.appendChild(link);
+      document.body.style.fontFamily = `'${fam}', sans-serif`;
+      localStorage.setItem('fontFamily', fam);
+      toast('تم تغيير الخط ✨');
+    });
+  });
+});
+
+$('#btnPalette').addEventListener('click', ()=>{
+  openModal('Palette de couleurs', `
+    <div class="palette">
+      ${['#2563eb','#0ea5e9','#22c55e','#f59e0b','#ef4444','#a855f7','#06b6d4','#059669'].map(c=>`<div class="sw" data-color="${c}" style="background:${c}"></div>`).join('')}
+    </div>
+    <div class="tip"></div>
+  `);
+  $$('#modal .sw').forEach(sw=>{
+    sw.addEventListener('click', ()=>{
+      const c=sw.dataset.color;
+      document.documentElement.style.setProperty('--primary', c);
+      localStorage.setItem('primaryColor', c);
+      toast('تم تغيير اللون الأساسي 🎨');
+    });
+  });
+});
+
+$('#btnDensity').addEventListener('click', ()=>{
+  const cur = +localStorage.getItem('density')||8;
+  const next = cur===8?4:8; // padding أصغر/أكبر
+  localStorage.setItem('density', next);
+  document.querySelectorAll('.bus-table td,.bus-table th').forEach(el=>el.style.padding = next+'px');
+  toast(next===4?'تم تفعيل الوضع المضغوط':'تم إلغاء الوضع المضغوط');
+});
+
+$('#btnSticky').addEventListener('click', ()=>{
+  const sticky = localStorage.getItem('sticky')==='1';
+  localStorage.setItem('sticky', sticky?'0':'1');
+  document.querySelectorAll('.bus-table thead th').forEach(th=>th.style.top = sticky?'0':'0');
+  toast(!sticky?'En-tête du tableau fixé':'Désinstallation effectuée');
+});
+
+$('#btnNotif').addEventListener('click', ()=>{ toast('🔔 Exemple de notification'); });
+
+$('#btnFeedback').addEventListener('click', ()=>{
+  openModal('Envoyer des commentaires', `
+    <textarea id="fbText" class="input" style="width:100%;height:120px" placeholder="..."></textarea>
+    <div class="row" style="margin-top:8px;justify-content:flex-start">
+      <button class="btn accent" id="fbSend"><i class="fa fa-paper-plane"></i>send</button>
+    </div>
+  `);
+  $('#fbSend').addEventListener('click', ()=>{
+    const msg=$('#fbText').value.trim(); if(!msg){toast('Écrire un commentaire');return}
+    const list=JSON.parse(localStorage.getItem('feedback')||'[]');
+    list.push({text:msg,date:new Date().toLocaleString()});
+    localStorage.setItem('feedback', JSON.stringify(list));
+    closeModal(); toast('Merci pour votre commentaire ✅');
+  });
+});
+
+$('#btnBackup').addEventListener('click', ()=>{
+  const payload = {
+    table: JSON.parse(localStorage.getItem('line45-data')||'[]'),
+    users: JSON.parse(localStorage.getItem('users')||'[]'),
+    theme: localStorage.getItem('theme')||'light',
+    fontSize: localStorage.getItem('fontSize')||'16',
+    fontFamily: localStorage.getItem('fontFamily')||'Tajawal',
+    primary: localStorage.getItem('primaryColor')||getComputedStyle(document.documentElement).getPropertyValue('--primary').trim()
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backup-bus.json';a.click();URL.revokeObjectURL(a.href);
+  toast('تم تنزيل النسخة الاحتياطية ⬇️');
+});
+$('#fileBackup').addEventListener('change', e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const data=JSON.parse(r.result);
+      localStorage.setItem('line45-data', JSON.stringify(data.table||[]));
+      localStorage.setItem('users', JSON.stringify(data.users||[]));
+      if(data.theme) localStorage.setItem('theme', data.theme);
+      if(data.fontSize) localStorage.setItem('fontSize', data.fontSize);
+      if(data.fontFamily) localStorage.setItem('fontFamily', data.fontFamily);
+      if(data.primary){ document.documentElement.style.setProperty('--primary', data.primary); localStorage.setItem('primaryColor', data.primary); }
+      buildTable(); themeApply(); fontApply(); applyFontFamily();
+      toast('تم استرجاع النسخة الاحتياطية ✅');
+    }catch{ toast('ملف غير صالح'); }
+  };
+  r.readAsText(f,'utf-8');
+});
+
+$('#btnReset').addEventListener('click', async ()=>{
+  if(await confirmBox('سيتم حذف كل شيء وإعادة تهيئة التطبيق. متابعة؟')){
+    localStorage.clear(); location.reload();
+  }
+});
+$('#btnAbout').addEventListener('click', ()=>{
+  openModal('À propos de l’application', `
+    <p>Système de bus — Version interface uniquement.** Comprend : horaire de la ligne 45, gestion des stations, export/import, paramètres de thème, police et couleur, remarques, sauvegarde, etc.    <div class="notice" style="margin-top:8px"><i class="fa fa-shield-halved"></i> Aucune donnée n’est envoyée à un serveur — tout est stocké localement..</div>
+  `);
+});
+
+/* ======================================================
+   الملف الشخصي
+====================================================== */
+function loadProfile(){
+  const p=JSON.parse(localStorage.getItem('profile')||'{}');
+  $('#pfName').value=p.name||''; $('#pfEmail').value=p.email||'';
+}
+$('#pfSave').addEventListener('click', ()=>{
+  const p={name:$('#pfName').value.trim(),email:$('#pfEmail').value.trim()};
+  localStorage.setItem('profile', JSON.stringify(p)); toast('Profil enregistré ✅');
+});
+$('#pfClear').addEventListener('click', ()=>{ $('#pfName').value=''; $('#pfEmail').value=''; });
+
+/* ======================================================
+   أدوات إضافية
+====================================================== */
+$('#btnNewRoute').addEventListener('click', ()=>{
+  const name=prompt('nom ligne ؟ (optional)'); if(name){ toast('La ligne a été créée: '+name); }
+  $('#toolInfo').style.display='block';
+  $('#toolInfo').textContent='(Simulation) Une nouvelle ligne a été créée"'+(name||'sans nom')+'".';
+});
+$('#btnRouteStats').addEventListener('click', ()=>{
+  const rows=[...tbody.rows]; const n=rows.length;
+  const completed=rows.reduce((acc,r)=>acc+[...r.cells].slice(2,8).every(c=>c.innerText.trim()?true:false),0);
+  $('#toolInfo').style.display='block';
+  $('#toolInfo').innerHTML = `Nombre de stations: <b>${n}</b> — complet: <b>${completed}</b> — Pourcentage de progression: <b>${Math.round((completed/n)*100)}%</b>`;
+});
+$('#btnCompact').addEventListener('click', ()=>{
+  document.querySelectorAll('.bus-table td,.bus-table th').forEach(el=>el.style.padding='4px');
+});
+$('#btnWide').addEventListener('click', ()=>{
+  document.querySelectorAll('.bus-table td,.bus-table th').forEach(el=>el.style.padding='10px');
+});
+
+/* ======================================================
+   التقارير
+====================================================== */
+function makeReport(full=false){
+  const rows=[...tbody.rows];
+  const now=new Date().toLocaleString();
+  let html = `<h3>Rapport ${full?'Détaillé':'Jour'} — ${now}</h3><div class="hr"></div>`;
+  html += `<p>Nombre de stations: <b>${rows.length}</b></p>`;
+  if(full){
+    html += '<ul style="margin-top:8px">';
+    rows.forEach((r,i)=>{
+      const filled=[...r.cells].slice(2,8).filter(c=>c.innerText.trim()).length;
+      html+=`<li>#${i+1} — ${r.cells[1].innerText} (Cases complétées: ${filled}/6)</li>`;
+    });
+    html+='</ul>';
+  }
+  return html;
+}
+$('#btnReportToday').addEventListener('click', ()=>{
+  $('#reportOut').style.display='block';
+  $('#reportOut').innerHTML = makeReport(false);
+});
+$('#btnReportFull').addEventListener('click', ()=>{
+  $('#reportOut').style.display='block';
+  $('#reportOut').innerHTML = makeReport(true);
+});
+$('#btnReportPrint').addEventListener('click', ()=>window.print());
+
+/* ======================================================
+   ملاحظات لكل صف (مودال)
+====================================================== */
+function openNotes(tr){
+  const name=tr.cells[1].innerText;
+  openModal('Notes — '+name, `
+    <textarea id="noteText" class="input" style="width:100%;height:120px" placeholder="Remarques sur la station..."></textarea>
+    <div class="row" style="margin-top:8px">
+      <button class="btn accent" id="noteSave"><i class="fa fa-save"></i> حفظ الملاحظة</button>
+    </div>
+  `);
+  // تحميل إن وجد
+  const key='note:'+name;
+  $('#noteText').value = localStorage.getItem(key)||'';
+  $('#noteSave').addEventListener('click', ()=>{
+    localStorage.setItem(key, $('#noteText').value);
+    toast('Remarque enregistrée pour la station 📝');
+    closeModal();
+  });
+}
+
+/* ======================================================
+   مودال عام
+====================================================== */
+function openModal(title, html){
+  $('#modalTitle').textContent=title;
+  $('#modalBody').innerHTML=html;
+  $('#modal').classList.add('active');
+}
+function closeModal(){ $('#modal').classList.remove('active'); }
+$('#modalClose').addEventListener('click', closeModal);
+$('#modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
+
+/* ======================================================
+   حفظ واسترجاع الإعدادات (خط/لون/ثيم/كثافة)
+====================================================== */
+function applyFontFamily(){
+  const fam = localStorage.getItem('fontFamily');
+  if(fam){ document.body.style.fontFamily=`'${fam}',sans-serif`; }
+}
+function applyPrimary(){
+  const c=localStorage.getItem('primaryColor'); if(c){ document.documentElement.style.setProperty('--primary', c); }
+}
+function applyDensity(){
+  const p=+localStorage.getItem('density')||8;
+  document.querySelectorAll('.bus-table td,.bus-table th').forEach(el=>el.style.padding = p+'px');
+}
+
+/* ======================================================
+   تحميل أولي
+====================================================== */
+window.addEventListener('DOMContentLoaded', ()=>{
+  // إعدادات
+  themeApply(); fontApply(); applyFontFamily(); applyPrimary(); applyDensity();
+  // بناء الجدول
+  buildTable();
+  // الملف الشخصي
+  loadProfile();
+});
+
+</script>
+</body>
+</html>
